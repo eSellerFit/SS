@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Squeegee Squad — Аналитическая справка по франшизе</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f7f5f0; --bg-2: #efecea; --bg-3: #e8e4de; --white: #ffffff;
+    --ink: #1a1714; --ink-2: #4a4540; --ink-3: #8a8480;
+    --amber: #c47c14; --amber-bg: #fef3dc; --amber-bdr: #f0c96a;
+    --teal: #0e7f6e; --teal-bg: #e6f5f2; --teal-bdr: #7dcbc2;
+    --coral: #c0392b; --coral-bg: #fdf0ee; --coral-bdr: #e8a49e;
+    --blue: #1a5fa8; --blue-bg: #eaf1fb; --blue-bdr: #8cb5e0;
+    --purple: #6b4cb8; --purple-bg: #f2eefb;
+    --green: #1e7a48; --green-bg: #e8f7ef; --green-bdr: #7ecda0;
+    --border: #ddd9d3; --border-2: #ccc8c2;
+    --shadow-sm: 0 1px 3px rgba(26,23,20,0.07), 0 1px 2px rgba(26,23,20,0.05);
+    --shadow-md: 0 4px 12px rgba(26,23,20,0.08), 0 2px 4px rgba(26,23,20,0.05);
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink); font-size: 15px; line-height: 1.65; }
+
+  /* HEADER */
+  .header { position: sticky; top: 0; z-index: 100; background: rgba(247,245,240,0.94); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 58px; box-shadow: var(--shadow-sm); }
+  .header-brand { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--ink); text-decoration: none; font-weight: 600; }
+  .header-brand span { color: var(--amber); }
+  .header-badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-3); letter-spacing: 0.1em; text-transform: uppercase; }
+  .nav-pills { display: flex; gap: 2px; }
+  .nav-pill { font-size: 12px; font-weight: 500; color: var(--ink-2); text-decoration: none; padding: 5px 13px; border-radius: 20px; transition: all 0.15s; }
+  .nav-pill:hover { background: var(--bg-3); color: var(--ink); }
+
+  /* HERO */
+  .hero { padding: 72px 40px 56px; max-width: 1100px; margin: 0 auto; border-bottom: 1px solid var(--border); }
+  .hero-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--amber); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .hero-eyebrow::after { content: ''; flex: 1; max-width: 48px; height: 1px; background: var(--amber-bdr); }
+  .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(34px, 5vw, 54px); line-height: 1.12; color: var(--ink); margin-bottom: 20px; font-weight: 700; }
+  .hero-title em { color: var(--amber); font-style: italic; }
+  .hero-sub { font-size: 15px; color: var(--ink-2); max-width: 580px; line-height: 1.75; margin-bottom: 36px; font-weight: 300; }
+  .hero-stats { display: flex; gap: 36px; flex-wrap: wrap; }
+  .hero-stat-num { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--ink); font-weight: 600; }
+  .hero-stat-num span { color: var(--amber); }
+  .hero-stat-label { font-size: 11px; color: var(--ink-3); margin-top: 2px; font-weight: 500; }
+
+  /* VERDICT */
+  .verdict { max-width: 1100px; margin: 36px auto; padding: 0 40px; }
+  .verdict-inner { background: var(--amber-bg); border: 1px solid var(--amber-bdr); border-radius: 14px; padding: 28px 36px; display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: center; box-shadow: var(--shadow-sm); }
+  .verdict-ocean { font-size: 40px; line-height: 1; }
+  .verdict-text h2 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--amber); margin-bottom: 6px; font-weight: 600; }
+  .verdict-text p { font-size: 13px; color: var(--ink-2); max-width: 520px; line-height: 1.65; }
+  .verdict-score { text-align: right; }
+  .verdict-score-num { font-family: 'Playfair Display', serif; font-size: 42px; color: var(--amber); line-height: 1; font-weight: 700; }
+  .verdict-score-label { font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+
+  /* SECTION */
+  .section { max-width: 1100px; margin: 0 auto; padding: 48px 40px; border-bottom: 1px solid var(--border); }
+  .section:last-child { border-bottom: none; }
+  .section-header { margin-bottom: 28px; }
+  .section-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--ink); font-weight: 600; }
+  .section-sub { font-size: 13px; color: var(--ink-2); margin-top: 8px; line-height: 1.65; max-width: 700px; }
+
+  /* NOTES */
+  .context-note { background: var(--teal-bg); border-left: 3px solid var(--teal); border-radius: 0 8px 8px 0; padding: 14px 18px; font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+  .amber-note { background: var(--amber-bg); border-left: 3px solid var(--amber); border-radius: 0 8px 8px 0; padding: 14px 18px; font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+  .coral-note { background: var(--coral-bg); border-left: 3px solid var(--coral); border-radius: 0 8px 8px 0; padding: 14px 18px; font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+
+  /* CARDS */
+  .context-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+  .context-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 16px 14px; box-shadow: var(--shadow-sm); transition: box-shadow 0.2s, transform 0.2s; }
+  .context-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .context-card-label { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; font-weight: 600; }
+  .context-card-num { font-family: 'Playfair Display', serif; font-size: 24px; line-height: 1; margin-bottom: 4px; font-weight: 700; }
+  .context-card-num.green { color: var(--teal); }
+  .context-card-num.blue  { color: var(--blue); }
+  .context-card-num.amber { color: var(--amber); }
+  .context-card-num.coral { color: var(--coral); }
+  .context-card-sub { font-size: 11px; color: var(--ink-3); }
+
+  /* TERRITORY */
+  .territory-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .territory-option { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 22px; box-shadow: var(--shadow-sm); }
+  .territory-option.recommended { border: 2px solid var(--teal); background: var(--teal-bg); }
+  .territory-option-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 10px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.07em; }
+  .badge-rec { background: var(--teal); color: white; }
+  .badge-alt { background: var(--bg-3); color: var(--ink-3); }
+  .territory-option-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+  .territory-option.recommended .territory-option-title { color: var(--teal); }
+  .territory-zip-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+  .zip-pill { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: var(--white); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; color: var(--ink-2); }
+  .territory-option.recommended .zip-pill { border-color: var(--teal-bdr); color: var(--teal); }
+  .territory-pro-con { font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+  .territory-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .territory-stat { background: rgba(255,255,255,0.7); border-radius: 6px; padding: 8px 10px; }
+  .territory-stat-label { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px; }
+  .territory-stat-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--ink); }
+  .territory-key-ask { background: var(--white); border: 1px solid var(--amber-bdr); border-radius: 10px; padding: 16px 20px; margin-top: 16px; box-shadow: var(--shadow-sm); }
+  .territory-key-ask-title { font-size: 13px; font-weight: 600; color: var(--amber); margin-bottom: 6px; }
+  .territory-key-ask-body { font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+
+  /* REALITY CHECK */
+  .rc-market-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
+  .rc-market-card { border-radius: 10px; padding: 16px; border: 1px solid; }
+  .rc-market-card.red-card   { background: var(--coral-bg); border-color: var(--coral-bdr); }
+  .rc-market-card.amber-card { background: var(--amber-bg); border-color: var(--amber-bdr); }
+  .rc-market-card.blue-card  { background: var(--blue-bg);  border-color: var(--blue-bdr); }
+  .rc-market-card-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .rc-market-card.red-card   .rc-market-card-label { color: var(--coral); }
+  .rc-market-card.amber-card .rc-market-card-label { color: var(--amber); }
+  .rc-market-card.blue-card  .rc-market-card-label { color: var(--blue); }
+  .rc-market-card-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .rc-market-card-body { font-size: 12px; color: var(--ink-2); line-height: 1.55; }
+  .rc-framing { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+  .rc-framing-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+  .rc-framing-body { font-size: 13px; color: var(--ink-2); line-height: 1.7; }
+
+  /* PRESSURE */
+  .pressure-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .pressure-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; box-shadow: var(--shadow-sm); }
+  .pressure-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 8px; }
+  .pressure-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .pressure-badge { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.06em; }
+  .badge-red   { background: var(--coral-bg); color: var(--coral); border: 1px solid var(--coral-bdr); }
+  .badge-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bdr); }
+  .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bdr); }
+  .badge-blue  { background: var(--blue-bg);  color: var(--blue);  border: 1px solid var(--blue-bdr); }
+  .pressure-bar-track { height: 4px; background: var(--bg-3); border-radius: 2px; margin-bottom: 12px; overflow: hidden; }
+  .pressure-bar-fill  { height: 4px; border-radius: 2px; }
+  .pressure-body { font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+  .sixth-pressure { margin-top: 14px; background: linear-gradient(135deg, var(--coral-bg), var(--amber-bg)); border: 1px solid var(--coral-bdr); border-radius: 12px; padding: 20px 22px; display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; }
+  .sixth-icon { font-size: 26px; line-height: 1; }
+  .sixth-title { font-size: 14px; font-weight: 600; color: var(--coral); margin-bottom: 5px; }
+  .sixth-body { font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+  .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .score-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .score-label { width: 100px; color: var(--ink-2); flex-shrink: 0; font-weight: 500; font-size: 12px; }
+  .score-bar-track { flex: 1; height: 4px; background: var(--bg-3); border-radius: 2px; overflow: hidden; }
+  .score-bar-fill { height: 4px; border-radius: 2px; }
+  .score-num { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-2); width: 28px; text-align: right; flex-shrink: 0; }
+  .score-note { font-size: 12px; color: var(--ink-3); line-height: 1.55; }
+
+  /* COMPETITORS */
+  .comp-table { width: 100%; border-collapse: collapse; }
+  .comp-table thead tr { border-bottom: 2px solid var(--border-2); }
+  .comp-table th { text-align: left; font-size: 10px; font-weight: 600; color: var(--ink-3); letter-spacing: 0.09em; text-transform: uppercase; padding: 8px 12px 12px; }
+  .comp-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  .comp-table tbody tr:hover { background: var(--bg-2); }
+  .comp-table td { padding: 12px; font-size: 13px; color: var(--ink-2); vertical-align: top; }
+  .comp-table td:first-child { font-weight: 600; color: var(--ink); }
+  .threat-high { color: var(--coral); font-weight: 600; font-size: 12px; }
+  .threat-med  { color: var(--amber); font-weight: 600; font-size: 12px; }
+  .threat-low  { color: var(--green); font-weight: 600; font-size: 12px; }
+
+  /* LOCAL COMPETITORS */
+  .local-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px; }
+  .local-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 14px; box-shadow: var(--shadow-sm); }
+  .local-card-name { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .local-card-meta { font-size: 11px; color: var(--ink-3); margin-bottom: 6px; }
+  .local-card-tag { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  .tag-generalist { background: var(--amber-bg); color: var(--amber); }
+  .tag-franchise   { background: var(--coral-bg); color: var(--coral); }
+  .tag-specialist  { background: var(--blue-bg);  color: var(--blue); }
+  .tag-gutter      { background: var(--bg-3);     color: var(--ink-3); }
+
+  /* INVESTMENT */
+  .invest-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  .invest-block { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 20px; box-shadow: var(--shadow-sm); }
+  .invest-block-title { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 14px; font-weight: 600; }
+  .invest-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .invest-row:last-child { border-bottom: none; }
+  .invest-row-label { color: var(--ink-2); }
+  .invest-row-val { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; }
+  .invest-row-val.amber { color: var(--amber); }
+  .invest-row-val.green { color: var(--green); }
+  .invest-row-val.coral { color: var(--coral); }
+  .yr-min-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 1px; background: var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+  .yr-min-cell { background: var(--white); padding: 14px; text-align: center; }
+  .yr-min-label { font-size: 10px; color: var(--ink-3); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; }
+  .yr-min-val { font-family: 'JetBrains Mono', monospace; font-size: 15px; color: var(--amber); font-weight: 500; }
+
+  /* CALCULATOR */
+  .calc-section { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 28px 32px; box-shadow: var(--shadow-md); }
+  .scenario-tabs { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 18px; background: var(--white); }
+  .scenario-tab { flex: 1; padding: 8px 6px; font-size: 11px; font-weight: 600; color: var(--ink-3); text-align: center; cursor: pointer; border-right: 1px solid var(--border); transition: all .15s; line-height: 1.3; }
+  .scenario-tab:last-child { border-right: none; }
+  .scenario-tab.active { background: var(--amber); color: #fff; }
+  .scenario-tab:hover:not(.active) { background: var(--bg-2); }
+  .reverse-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 16px 0 10px; }
+  .rev-box { background: var(--bg-2); border-radius: 8px; padding: 14px 12px; border: 1px solid var(--border); }
+  .rev-box-label { font-size: 10px; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  .rev-box-val { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--amber); font-weight: 700; }
+  .rev-box-sub { font-size: 10px; color: var(--ink-3); margin-top: 3px; }
+  .calc-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; margin-bottom: 24px; }
+  .slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .slider-label { font-size: 12px; color: var(--ink-2); width: 160px; flex-shrink: 0; font-weight: 500; }
+  .slider-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; min-width: 56px; text-align: right; color: var(--ink); }
+  .calc-metric-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
+  .calc-metric { background: var(--bg-2); border-radius: 8px; padding: 14px; }
+  .calc-metric-label { font-size: 11px; color: var(--ink-3); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  .calc-metric-val { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+  .calc-metric-sub { font-size: 11px; color: var(--ink-3); margin-top: 3px; }
+  .calc-metric-val.green { color: var(--green); }
+  .calc-metric-val.red   { color: var(--coral); }
+  .calc-metric-val.amber { color: var(--amber); }
+  .bd-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+  .bd-table th { font-size: 10px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em; padding: 6px 10px 10px; text-align: right; border-bottom: 1px solid var(--border-2); }
+  .bd-table th:first-child { text-align: left; }
+  .bd-table td { padding: 8px 10px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .bd-table td:not(:first-child) { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .bd-table tr.group-header td { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em; padding-top: 14px; padding-bottom: 4px; border-bottom: none; }
+  .bd-table tr.subtotal td { font-weight: 600; background: var(--bg-2); }
+  .bd-table tr.total-row td { font-weight: 600; font-size: 14px; border-top: 2px solid var(--border-2); border-bottom: none; }
+  .bd-table tr.indent td:first-child { padding-left: 22px; color: var(--ink-2); }
+  .col-pct { color: var(--ink-3); }
+  .col-red { color: var(--coral); }
+  .col-green { color: var(--green); }
+  .col-amber { color: var(--amber); }
+  .bar-wrap { display: flex; height: 10px; background: var(--bg-3); border-radius: 5px; overflow: hidden; margin-bottom: 8px; }
+  .bar-seg { height: 10px; transition: width 0.3s; }
+  .bar-legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 11px; color: var(--ink-3); margin-bottom: 20px; }
+  .leg-item { display: flex; align-items: center; gap: 5px; }
+  .leg-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+  .tier-note { font-size: 12px; color: var(--ink-2); padding: 10px 14px; background: var(--amber-bg); border: 1px solid var(--amber-bdr); border-radius: 8px; line-height: 1.55; }
+  .chart-wrap { position: relative; width: 100%; height: 220px; margin-top: 20px; }
+
+  /* COMMERCIAL */
+  .commercial-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 16px; }
+  .commercial-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 16px; box-shadow: var(--shadow-sm); }
+  .commercial-card-service { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; font-weight: 600; }
+  .commercial-card-amount { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--teal); margin-bottom: 4px; font-weight: 700; }
+  .commercial-card-desc { font-size: 12px; color: var(--ink-3); line-height: 1.5; }
+  .commercial-total { background: var(--teal-bg); border: 1px solid var(--teal-bdr); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .commercial-total-label { font-size: 13px; color: var(--ink-2); font-weight: 500; }
+  .commercial-total-val { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--teal); font-weight: 700; }
+  .commercial-total-sub { font-size: 11px; color: var(--ink-3); text-align: right; }
+
+  /* BENCHMARKS */
+  .benchmark-row { display: grid; grid-template-columns: 190px 1fr 80px 80px 56px; gap: 12px; align-items: center; padding: 9px 12px; border-radius: 8px; font-size: 13px; transition: background 0.15s; }
+  .benchmark-row:hover { background: var(--bg-2); }
+  .benchmark-row.header { font-size: 10px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em; padding-bottom: 8px; border-bottom: 1px solid var(--border-2); margin-bottom: 4px; }
+  .benchmark-row.header:hover { background: none; }
+  .bm-bar-track { height: 5px; background: var(--bg-3); border-radius: 3px; overflow: hidden; }
+  .bm-bar-fill { height: 5px; border-radius: 3px; background: linear-gradient(to right, var(--teal), var(--amber)); }
+  .bm-loc { color: var(--ink); font-weight: 500; }
+  .bm-rev { font-family: 'JetBrains Mono', monospace; color: var(--amber); font-size: 12px; font-weight: 500; }
+  .bm-pop { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-3); }
+  .bm-yr  { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-3); }
+  .bm-highlight { color: var(--teal); font-weight: 600; }
+  .benchmark-row.highlight-row { background: var(--teal-bg); }
+
+  /* INSIGHTS */
+  .insights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .insight-card { border-left: 3px solid; background: var(--white); border-radius: 0 10px 10px 0; padding: 16px 18px; box-shadow: var(--shadow-sm); }
+  .insight-card.teal   { border-color: var(--teal); }
+  .insight-card.amber  { border-color: var(--amber); }
+  .insight-card.blue   { border-color: var(--blue); }
+  .insight-card.purple { border-color: var(--purple); }
+  .insight-card.coral  { border-color: var(--coral); }
+  .insight-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .insight-card.teal   .insight-title { color: var(--teal); }
+  .insight-card.amber  .insight-title { color: var(--amber); }
+  .insight-card.blue   .insight-title { color: var(--blue); }
+  .insight-card.purple .insight-title { color: var(--purple); }
+  .insight-card.coral  .insight-title { color: var(--coral); }
+  .insight-body { font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+
+  /* RISKS */
+  .risks-list { display: flex; flex-direction: column; gap: 8px; }
+  .risk-row { display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start; background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; box-shadow: var(--shadow-sm); }
+  .risk-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-3); padding-top: 2px; }
+  .risk-title { font-size: 13px; font-weight: 600; color: var(--coral); margin-bottom: 4px; }
+  .risk-body { font-size: 13px; color: var(--ink-2); line-height: 1.6; }
+
+  /* QUESTIONS */
+  .questions-list { display: flex; flex-direction: column; gap: 7px; }
+  .question-row { display: grid; grid-template-columns: 26px 1fr auto; gap: 12px; align-items: center; background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; box-shadow: var(--shadow-sm); transition: box-shadow 0.15s; }
+  .question-row:hover { box-shadow: var(--shadow-md); }
+  .question-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--amber); font-weight: 600; }
+  .question-text { font-size: 13px; color: var(--ink-2); line-height: 1.55; }
+  .question-cat { font-size: 10px; padding: 3px 9px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600; white-space: nowrap; }
+  .cat-territory { background: var(--teal-bg);   color: var(--teal); }
+  .cat-financial { background: var(--amber-bg);  color: var(--amber); }
+  .cat-market    { background: var(--coral-bg);  color: var(--coral); }
+  .cat-legal     { background: var(--purple-bg); color: var(--purple); }
+
+  /* FOOTER */
+  .footer { max-width: 1100px; margin: 0 auto; padding: 28px 40px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); }
+  .footer-brand { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--ink-3); }
+  .footer-brand span { color: var(--amber); }
+  .footer-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-3); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .hero { animation: fadeUp 0.45s ease both 0.05s; }
+  .verdict { animation: fadeUp 0.45s ease both 0.12s; }
+
+  @media (max-width: 780px) {
+    .header { padding: 0 20px; }
+    .hero, .verdict, .section { padding-left: 20px; padding-right: 20px; }
+    .context-grid, .pressure-grid, .invest-grid, .territory-compare, .commercial-grid,
+    .insights-grid, .score-grid, .calc-controls, .calc-metric-grid,
+    .rc-market-grid, .local-grid, .territory-stat-row { grid-template-columns: 1fr; }
+    .verdict-inner { grid-template-columns: 1fr; }
+    .benchmark-row { grid-template-columns: 1fr 80px; }
+    .benchmark-row .bm-pop, .benchmark-row .bm-yr { display: none; }
+    .nav-pills { display: none; }
+    .footer { flex-direction: column; gap: 8px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a class="header-brand" href="#">Squeegee <span>Squad</span></a>
+  <span class="header-badge">Аналитическая справка по франшизе · Июнь 2026</span>
+  <nav class="nav-pills">
+    <a href="#territory"   class="nav-pill">Территория</a>
+    <a href="#reality"     class="nav-pill">Проверка реальности</a>
+    <a href="#pressures"   class="nav-pill">Давления рынка</a>
+    <a href="#competition" class="nav-pill">Конкуренты</a>
+    <a href="#investment"  class="nav-pill">Инвестиции</a>
+    <a href="#calculator"  class="nav-pill">Калькулятор</a>
+    <a href="#friday"      class="nav-pill">Пятница</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Анализ франшизной возможности — стратегия одной территории</div>
+  <h1 class="hero-title">Территория с центром<br>в <em>Скарсдейле</em>, Уэстчестер (Нью-Йорк)</h1>
+  <p class="hero-sub">Одна территория. Население 300 тысяч человек. Максимальная плотность дохода. Первый франчайзи Squeegee Squad в штате Нью-Йорк и Коннектикут. Полная аналитическая справка к встрече с владельцами компании в пятницу.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">$119<span>K</span></div>
+      <div class="hero-stat-label">Медианный доход домохозяйства, Уэстчестер</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">$601<span>K</span></div>
+      <div class="hero-stat-label">Средний доход домохозяйства, Скарсдейл</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">#1</div>
+      <div class="hero-stat-label">Самый богатый пригород США (Скарсдейл)</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">0</div>
+      <div class="hero-stat-label">Франчайзи Squeegee Squad в NY+CT</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">25<span>.4%</span></div>
+      <div class="hero-stat-label">Рост выручки по системе '24→'25</div>
+    </div>
+  </div>
+</div>
+
+<!-- VERDICT -->
+<div class="verdict">
+  <div class="verdict-inner">
+    <div class="verdict-ocean">🟠</div>
+    <div class="verdict-text">
+      <h2>Янтарный океан — конкурентно, но выигрышно</h2>
+      <p>Это не пустой рынок. В сфере жилой и низкоэтажной мойки окон в Уэстчестере уже работают Fish Window Cleaning, Window Genie, Cappco и более 20 операторов, найденных через Google. Рынок является «голубым» только внутри франчайзинговой системы Squeegee Squad. Реальный вопрос не «есть ли мойщики окон?» — они есть. Реальный вопрос в том, даёт ли Squeegee Squad достаточно дифференциации, доступа к коммерческим клиентам и отлаженных процессов, чтобы побеждать за <strong>клиентов более высокого уровня, которых никто другой обслужить не может.</strong></p>
+    </div>
+    <div class="verdict-score">
+      <div class="verdict-score-num">6.2</div>
+      <div class="verdict-score-label">/ 10 совокупный<br>балл давления</div>
+    </div>
+  </div>
+</div>
+
+<!-- 01 TERRITORY -->
+<section class="section" id="territory">
+  <div class="section-header">
+    <div class="section-tag">01 — Выбор территории</div>
+    <div class="section-title">Рекомендация: Вариант B — с центром в Скарсдейле</div>
+  </div>
+  <div class="territory-compare">
+    <div class="territory-option recommended">
+      <span class="territory-option-badge badge-rec">Рекомендуется — Вариант B</span>
+      <div class="territory-option-title">Ядро: Скарсдейл / Харрисон / Армонк</div>
+      <div class="territory-zip-list">
+        <span class="zip-pill">10583 Скарсдейл</span>
+        <span class="zip-pill">10528 Харрисон</span>
+        <span class="zip-pill">10577 Пёрчейз</span>
+        <span class="zip-pill">10504 Армонк</span>
+        <span class="zip-pill">10605 Уайт-Плейнс, север</span>
+        <span class="zip-pill">10706 Гастингс</span>
+        <span class="zip-pill">10708 Бронксвилл</span>
+        <span class="zip-pill">10530 Хартсдейл</span>
+      </div>
+      <div class="territory-pro-con">Самая высокая концентрация состоятельных жителей в пригородном коридоре США. Скарсдейл — пригород №1 по богатству в США со средним доходом домохозяйства $601K. В Харрисоне расположены штаб-квартиры Mastercard и PepsiCo. В каждом доме больше окон, оплата происходит без торга, клиенты записываются на регулярное обслуживание. Корпоративные кампусы — коммерческие аккаунты — находятся внутри территории.<br><br>От вашей базы в Мамаронеке вы находитесь в 10–15 минутах от каждого из этих почтовых индексов. Преимущество расположения полностью сохраняется.</div>
+      <div class="territory-stat-row">
+        <div class="territory-stat"><div class="territory-stat-label">Средняя стоимость дома</div><div class="territory-stat-val">$1.2M–$1.6M</div></div>
+        <div class="territory-stat"><div class="territory-stat-label">Средний доход домохозяйства</div><div class="territory-stat-val">$400K–$600K</div></div>
+        <div class="territory-stat"><div class="territory-stat-label">Штаб-квартиры компаний внутри</div><div class="territory-stat-val">Mastercard, PepsiCo</div></div>
+        <div class="territory-stat"><div class="territory-stat-label">Премия к выручке за заказ</div><div class="territory-stat-val">+30–40% к среднему по стране</div></div>
+      </div>
+    </div>
+    <div class="territory-option">
+      <span class="territory-option-badge badge-alt">Вариант A — Родная база</span>
+      <div class="territory-option-title">Ядро: Мамаронек / Рай / Ларчмонт</div>
+      <div class="territory-zip-list">
+        <span class="zip-pill">10543 Мамаронек</span>
+        <span class="zip-pill">10538 Ларчмонт</span>
+        <span class="zip-pill">10580 Рай</span>
+        <span class="zip-pill">10801 Нью-Рошель</span>
+        <span class="zip-pill">10528 Харрисон</span>
+        <span class="zip-pill">10573 Порт-Честер</span>
+      </div>
+      <div class="territory-pro-con">Ваш буквальный задний двор — максимальная локальная узнаваемость и сарафанное радио. Рай и Ларчмонт — по-настоящему состоятельные районы. Сильная база жилых клиентов.<br><br><strong>Проблема:</strong> чтобы набрать население в 300K, Squeegee Squad почти наверняка включит Нью-Рошель (население ~80K, медианный доход $109K, высокая плотность многоквартирной застройки). Это значительно ухудшает качество территории — более низкий средний чек, более чувствительные к цене клиенты. Территория также более насыщена — те же 20 локальных операторов из Google уже активны в Южном Уэстчестере.</div>
+      <div class="territory-stat-row">
+        <div class="territory-stat"><div class="territory-stat-label">Средняя стоимость дома</div><div class="territory-stat-val">$750K–$1.1M</div></div>
+        <div class="territory-stat"><div class="territory-stat-label">Риск размытия</div><div class="territory-stat-val">Нью-Рошель ~80K нас.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="territory-key-ask">
+    <div class="territory-key-ask-title">Точный вопрос, который нужно задать в пятницу</div>
+    <div class="territory-key-ask-body"><em>«Можете ли вы сформировать мою территорию по почтовым индексам, а не по границам округа, с центром в Скарсдейле 10583, Харрисоне 10528, Пёрчейзе 10577 и Армонке 10504 — явно исключив Нью-Рошель, Йонкерс и Маунт-Вернон? Мне нужна максимальная плотность дохода на квадратную милю, а не просто общее число населения».</em><br><br>Это ваш самый важный переговорный пункт до подписания чего-либо.</div>
+  </div>
+</section>
+
+<!-- 02 REALITY CHECK -->
+<section class="section" id="reality">
+  <div class="section-header">
+    <div class="section-tag">02 — Проверка конкурентной реальности</div>
+    <div class="section-title">Что действительно конкурентно — а что нет</div>
+    <div class="section-sub">Этот раздел — честный противовес любому чрезмерно оптимистичному прочтению возможности. Рынок не пустой. Вопрос в том, где находится реальный разрыв.</div>
+  </div>
+
+  <!-- MARKET CLASSIFICATION -->
+  <div style="font-size:10px; color:var(--ink-3); text-transform:uppercase; letter-spacing:0.09em; font-weight:600; margin-bottom:12px;">Классификация рыночных сегментов</div>
+  <div class="rc-market-grid">
+    <div class="rc-market-card red-card">
+      <div class="rc-market-card-label">🔴 Янтарно-красный</div>
+      <div class="rc-market-card-title">Жилая мойка окон</div>
+      <div class="rc-market-card-body">Уже конкурентно. Fish, Window Genie, Cappco и более 20 локальных операторов из Google активны в тех же престижных городках. Вы будете конкурировать за каждый звонок частного клиента.</div>
+    </div>
+    <div class="rc-market-card red-card">
+      <div class="rc-market-card-label">🔴 Янтарно-красный</div>
+      <div class="rc-market-card-title">Низкоэтажная коммерция</div>
+      <div class="rc-market-card-body">Основная зона Fish — витрины магазинов, офисы, рестораны, небольшие здания. Сегмент уже занят устоявшейся франшизой с 45-летней историей и 274 точками по стране.</div>
+    </div>
+    <div class="rc-market-card amber-card">
+      <div class="rc-market-card-label">🟡 Янтарно-голубой</div>
+      <div class="rc-market-card-title">Высотный доступ и крупная коммерция</div>
+      <div class="rc-market-card-body">Высотные здания, фармацевтические кампусы, мойка под давлением, солнечные панели, реставрация зданий, канатный доступ. Ни один локальный оператор не может здесь конкурировать. Это структурное преимущество Squeegee Squad — и ваша реальная возможность.</div>
+    </div>
+    <div class="rc-market-card blue-card">
+      <div class="rc-market-card-label">🔵 Голубой</div>
+      <div class="rc-market-card-title">Система Squeegee Squad в NY/CT</div>
+      <div class="rc-market-card-body">Ни одного действующего франчайзи Squeegee Squad в штатах Нью-Йорк или Коннектикут — подтверждено по актуальной карте локаций. Внутри системы вы — настоящий первопроходец. Конфликтов по политике межтерриториальных рефералов нет.</div>
+    </div>
+  </div>
+
+  <!-- FRAMING -->
+  <div class="rc-framing">
+    <div class="rc-framing-title">Правильная рамка для этого решения</div>
+    <div class="rc-framing-body">Рынок не пустой. Он «голубой» только внутри франчайзинговой системы Squeegee Squad. Для реальных клиентов на рынке уже есть конкуренты — 20 операторов появляются в одном поисковом запросе Google по Мамаронеку. Однако ни один из них не может обслужить фармацевтический кампус, штаб-квартиру корпорации или многоэтажное здание, требующее канатного доступа или сертификации SPRAT. Ключевой вопрос не «есть ли мойщики окон?» — они есть. Ключевой вопрос в том, дают ли вам Squeegee Squad достаточно дифференциации, систем, доступа к коммерческим клиентам и поддержки процессов, чтобы побеждать за <strong>клиентов более высокого уровня, которых не может обслужить ни один независимый оператор.</strong> Это и есть реальная ставка, которую вы делаете.</div>
+  </div>
+
+  <!-- LOCAL COMPETITORS FROM GOOGLE -->
+  <div style="font-size:10px; color:var(--ink-3); text-transform:uppercase; letter-spacing:0.09em; font-weight:600; margin-bottom:12px; margin-top:24px;">Реальные конкуренты, найденные через Google — район Мамаронека</div>
+  <div class="local-grid">
+    <div class="local-card">
+      <div class="local-card-name">Window Genie of Westchester</div>
+      <div class="local-card-meta">5.0 ⭐ · 226 отзывов · 32+ года · франшиза Neighborly</div>
+      <span class="local-card-tag tag-franchise">Франшиза · Высокая угроза</span>
+    </div>
+    <div class="local-card">
+      <div class="local-card-name">Fish Window Cleaning</div>
+      <div class="local-card-meta">Национальная франшиза · 274+ точек · основана в 1978</div>
+      <span class="local-card-tag tag-franchise">Франшиза · Высокая угроза</span>
+    </div>
+    <div class="local-card">
+      <div class="local-card-name">Ned Stevens Long Island</div>
+      <div class="local-card-meta">4.6 ⭐ · 839 отзывов · 61+ год · крупный региональный оператор</div>
+      <span class="local-card-tag tag-specialist">Региональный · Средняя угроза</span>
+    </div>
+    <div class="local-card">
+      <div class="local-card-name">Cappco Pressure Washing</div>
+      <div class="local-card-meta">5.0 ⭐ · 453 отзыва · 8+ лет · семейный бизнес</div>
+      <span class="local-card-tag tag-generalist">Универсальный · Средняя</span>
+    </div>
+    <div class="local-card">
+      <div class="local-card-name">Spotless Gutter Cleaning</div>
+      <div class="local-card-meta">4.9 ⭐ · 1 941 отзыв · 20+ лет · рейтинг BBB A+</div>
+      <span class="local-card-tag tag-gutter">Специалист по водостокам · Низкая</span>
+    </div>
+    <div class="local-card">
+      <div class="local-card-name">RU Ready Power Washing</div>
+      <div class="local-card-meta">4.9 ⭐ · 540 отзывов · 9+ лет · база в Коннектикуте</div>
+      <span class="local-card-tag tag-generalist">Универсальный · Средняя</span>
+    </div>
+    <div class="local-card">
+      <div class="local-card-name">All Clean LLC</div>
+      <div class="local-card-meta">4.9 ⭐ · 171 отзыв · 34+ года · семейный бизнес</div>
+      <span class="local-card-tag tag-generalist">Универсальный · Низкая-средняя</span>
+    </div>
+    <div class="local-card">
+      <div class="local-card-name">BG Window Cleaning</div>
+      <div class="local-card-meta">5.0 ⭐ · 143 отзыва · 6+ лет · семейный бизнес</div>
+      <span class="local-card-tag tag-specialist">Специалист по окнам · Низкая</span>
+    </div>
+    <div class="local-card">
+      <div class="local-card-name">Power Wash Near Me LLC</div>
+      <div class="local-card-meta">5.0 ⭐ · 313 отзывов · 14+ лет · упор на мягкую мойку</div>
+      <span class="local-card-tag tag-generalist">Универсальный · Низкая-средняя</span>
+    </div>
+  </div>
+  <div class="coral-note">
+    <strong>Ключевое структурное наблюдение:</strong> из 20 операторов, найденных в одном поисковом запросе Google по Мамаронеку, <strong>ни один не способен выполнять коммерческую работу с высотным доступом.</strong> Каждый фармацевтический кампус, штаб-квартира корпорации и многоэтажное здание, требующее канатного доступа, беседочного кресла или сертификации SPRAT, остаются полностью неохваченными. Поиск в Google подтверждает двухуровневый рынок — переполненный внизу, пустой наверху.
+  </div>
+</section>
+
+<!-- 03 PRESSURES -->
+<section class="section" id="pressures">
+  <div class="section-header">
+    <div class="section-tag">03 — Модель рыночного давления</div>
+    <div class="section-title">Шесть давлений — применение вашей фирменной модели</div>
+  </div>
+  <div class="pressure-grid">
+    <div class="pressure-card">
+      <div class="pressure-head">
+        <div class="pressure-name">1. Давление стоимости рекламы</div>
+        <span class="pressure-badge badge-amber">Средне-высокое · 7.0</span>
+      </div>
+      <div class="pressure-bar-track"><div class="pressure-bar-fill" style="width:70%; background:var(--amber);"></div></div>
+      <div class="pressure-body">Рынок Google LSA в метро Нью-Йорка дорогой. 20+ операторов конкурируют за одни и те же поисковые запросы. Национальный рекламный фонд (1% от выручки) и SEO-инфраструктура Squeegee Squad частично компенсируют это. Вы обязаны тратить 5% от выручки на локальную рекламу — при масштабировании бюджет $20K–$50K/год. Реальное давление, частично субсидируемое.</div>
+    </div>
+    <div class="pressure-card">
+      <div class="pressure-head">
+        <div class="pressure-name">2. Давление количества поставщиков</div>
+        <span class="pressure-badge badge-green">Низкое · 2.5</span>
+      </div>
+      <div class="pressure-bar-track"><div class="pressure-bar-fill" style="width:25%; background:var(--teal);"></div></div>
+      <div class="pressure-body">Мойка окон — исключительно низкозатратный по капиталу бизнес. Оборудование от Harry Falk стоит $1K–$20K. Автомобили, штанги с водоподачей, химия — ни одна из статей не является дорогостоящей. <strong>Труд — ваша реальная затратная статья</strong>, а не материалы. Влияние поставщиков на вас незначительно. Ваша самая благоприятная точка давления.</div>
+    </div>
+    <div class="pressure-card">
+      <div class="pressure-head">
+        <div class="pressure-name">3. Давление объёма спроса клиентов</div>
+        <span class="pressure-badge badge-green">Высокий спрос · 1.8</span>
+      </div>
+      <div class="pressure-bar-track"><div class="pressure-bar-fill" style="width:18%; background:var(--teal);"></div></div>
+      <div class="pressure-body">~170K домов на одну семью в Уэстчестере, сконцентрированных в районах с самым высоким доходом. Mastercard, PepsiCo, фармацевтические кампусы, медицинские учреждения — всё внутри территории. Один только Boehringer Ingelheim — это $85K+ по одному аккаунту. Спрос глубокий — и в жилом, и в коммерческом сегменте. Это давление работает в вашу пользу.</div>
+    </div>
+    <div class="pressure-card">
+      <div class="pressure-head">
+        <div class="pressure-name">4. Давление маржинального коридора</div>
+        <span class="pressure-badge badge-amber">Среднее · 5.5</span>
+      </div>
+      <div class="pressure-bar-track"><div class="pressure-bar-fill" style="width:55%; background:var(--amber);"></div></div>
+      <div class="pressure-body">Совокупные отчисления достигают <strong>14% от выручки</strong> (роялти + национальная + локальная реклама). Сжимает маржу в первые годы. Премиальные цены Уэстчестера это компенсируют — заказ за $400 в другом месте здесь стоит $500–$550. Выше $500K роялти падает до 5%. Быстрее преодолеть отметку $500K — стратегический приоритет. См. калькулятор.</div>
+    </div>
+    <div class="pressure-card">
+      <div class="pressure-head">
+        <div class="pressure-name">5. Давление узнаваемости бренда</div>
+        <span class="pressure-badge badge-amber">Средне-высокое · 6.5</span>
+      </div>
+      <div class="pressure-bar-track"><div class="pressure-bar-fill" style="width:65%; background:var(--purple);"></div></div>
+      <div class="pressure-body">Клиенты ищут «мойка окон Уэстчестер», а не «Squeegee Squad». Вы строите узнаваемость бренда с нуля в регионе, где Fish Window Cleaning работает десятилетиями. Франчайзинговая инфраструктура (SEO, Squadware) помогает, но притяжение бренда не будет обеспечивать раннюю выручку. Ваша личная способность продавать — реальный двигатель роста в первые 1–2 года.</div>
+    </div>
+    <div class="pressure-card">
+      <div class="pressure-head">
+        <div class="pressure-name">6. Давление количества конкурентов</div>
+        <span class="pressure-badge badge-amber">Средне-высокое · 6.5</span>
+      </div>
+      <div class="pressure-bar-track"><div class="pressure-bar-fill" style="width:65%; background:var(--coral);"></div></div>
+      <div class="pressure-body">20 операторов в одном поисковом запросе Google по Мамаронеку. У Fish Window Cleaning 45+ лет истории и 274 точки. Window Genie (Neighborly) — устоявшаяся франшиза. Рынок жилой и низкоэтажной мойки действительно конкурентен. Это давление реально — но применимо только к товарному сегменту. Высотная коммерция полностью неохвачена.</div>
+    </div>
+  </div>
+
+  <div class="sixth-pressure">
+    <div class="sixth-icon">⚠️</div>
+    <div>
+      <div class="sixth-title">Давление дифференциации — критическое шестое давление</div>
+      <div class="sixth-body">Продавать просто «мойку окон» недостаточно. Питч, который выигрывает на этом рынке: <em>«Мы — полноценная платформа внешних клининговых услуг: доступ к высотным зданиям, сертификация SPRAT, страховка для коммерческих кампусов, управление регулярными аккаунтами, комплекс услуг мойки под давлением и очистки солнечных панелей».</em> Это принципиально другой разговор о продаже, чем у Fish или любого локального оператора. Если Squeegee Squad не сможет помочь вам выстроить и реализовать этот коммерческий питч с первого дня, преимущество дифференциации сводится только к названию бренда — а этого недостаточно на данном рынке. <strong>Давление: среднее (5.0)</strong> при качественном исполнении; высокое — при отсутствии такового.</div>
+    </div>
+  </div>
+
+  <div style="margin-top:16px; background:var(--white); border:1px solid var(--border); border-radius:10px; padding:20px; box-shadow:var(--shadow-sm);">
+    <div style="font-size:10px; color:var(--ink-3); text-transform:uppercase; letter-spacing:0.09em; font-weight:600; margin-bottom:16px;">Совокупные баллы давления</div>
+    <div class="score-grid">
+      <div class="score-row"><div class="score-label">Реклама</div><div class="score-bar-track"><div class="score-bar-fill" style="width:70%; background:var(--amber);"></div></div><div class="score-num">7.0</div></div>
+      <div class="score-row"><div class="score-label">Поставщики</div><div class="score-bar-track"><div class="score-bar-fill" style="width:25%; background:var(--teal);"></div></div><div class="score-num">2.5</div></div>
+      <div class="score-row"><div class="score-label">Спрос</div><div class="score-bar-track"><div class="score-bar-fill" style="width:18%; background:var(--teal);"></div></div><div class="score-num">1.8</div></div>
+      <div class="score-row"><div class="score-label">Маржа</div><div class="score-bar-track"><div class="score-bar-fill" style="width:55%; background:var(--amber);"></div></div><div class="score-num">5.5</div></div>
+      <div class="score-row"><div class="score-label">Узнав. бренда</div><div class="score-bar-track"><div class="score-bar-fill" style="width:65%; background:var(--purple);"></div></div><div class="score-num">6.5</div></div>
+      <div class="score-row"><div class="score-label">Конкуренты</div><div class="score-bar-track"><div class="score-bar-fill" style="width:65%; background:var(--coral);"></div></div><div class="score-num">6.5</div></div>
+      <div class="score-row"><div class="score-label">Дифференциация</div><div class="score-bar-track"><div class="score-bar-fill" style="width:50%; background:#6b4cb8;"></div></div><div class="score-num">5.0</div></div>
+      <div class="score-row"><div class="score-label" style="font-weight:600; color:var(--amber);">Совокупный</div><div class="score-bar-track"><div class="score-bar-fill" style="width:62%; background:linear-gradient(to right,var(--teal),var(--amber));"></div></div><div class="score-num" style="color:var(--amber);font-weight:600;">6.2</div></div>
+    </div>
+    <div class="score-note" style="margin-top:10px;">Балл 10 означает максимальное конкурентное давление/угрозу. Спрос оценивается инвертированно: высокий спрос = низкое давление = низкий балл. Совокупный балл — взвешенное среднее по всем семи параметрам давления.</div>
+  </div>
+</section>
+
+<!-- 04 COMPETITORS -->
+<section class="section" id="competition">
+  <div class="section-header">
+    <div class="section-tag">04 — Таблица угроз конкурентов</div>
+    <div class="section-title">Рыночные конкуренты по типу и уровню угрозы</div>
+  </div>
+  <div class="amber-note" style="margin-bottom:20px;">
+    <strong>Уточнение по системе:</strong> Fish Window Cleaning, Window Genie и все операторы ниже — <strong>независимые рыночные конкуренты</strong>, никак не связанные с системой Squeegee Squad. Если клиент из Гринвича позвонит вам, вы просто едете. Политика межтерриториальных рефералов на них не распространяется. Fish не может заблокировать вас внутри системы Squeegee Squad никаким образом.
+  </div>
+  <table class="comp-table">
+    <thead>
+      <tr><th>Тип конкурента</th><th>Уровень угрозы</th><th>Почему это важно</th><th>Ваше возможное преимущество</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Fish Window Cleaning</td>
+        <td class="threat-high">⬤ Высокая</td>
+        <td>Устоявшаяся франшиза, локальное присутствие, прямое пересечение по жилым и низкоэтажным объектам. 45 лет узнаваемости бренда. №1 в списке мойки окон Entrepreneur за 2026 год. Средняя выручка франчайзи — $1.6M.</td>
+        <td>Fish обслуживает здания только до 3 этажей. Ноль высотных работ, ноль солнечных панелей, ноль мойки под давлением, ноль световых люков. Каждый крупный коммерческий заказ — ваш. Первый Squeegee Squad в NY/CT.</td>
+      </tr>
+      <tr>
+        <td>Window Genie of Westchester</td>
+        <td class="threat-high">⬤ Средняя/Высокая</td>
+        <td>226 отзывов, 5.0 звёзд, 32 года, поддержка франшизы Neighborly. Напрямую конкурирует в состоятельных жилых городках — Скарсдейл, Рай, Харрисон. Самый сильный локальный конкурент-франшиза.</td>
+        <td>Комплексные внешние услуги — мойка под давлением, солнечные панели, высотные работы — вне модели Window Genie. Нацельтесь на коммерческие аккаунты и премиальные регулярные жилые пакеты, которые они не могут объединить.</td>
+      </tr>
+      <tr>
+        <td>Cappco / универсалы по мойке под давлением</td>
+        <td class="threat-med">⬤ Средняя</td>
+        <td>Сильное локальное SEO, пересечение по внешней очистке. У Cappco 453 отзыва и 5.0 звёзд. Видимы в Google. Конкурируют за те же звонки по внешней очистке.</td>
+        <td>Полная франчайзинговая система, коммерческий процесс, сертификация SPRAT и страховая документация выигрывают коммерческие тендеры, на которые они не могут претендовать. В жилом сегменте — соответствуйте качеству, выигрывайте за счёт доверия.</td>
+      </tr>
+      <tr>
+        <td>Мелкие независимые (10+ в Google)</td>
+        <td class="threat-med">⬤ Средняя</td>
+        <td>Гибкость по цене, локальные связи, у некоторых сильные отзывы. All Clean LLC (34 года), BG Window Cleaning (143 отзыва). Знакомые лица в сообществе.</td>
+        <td>Профессионализм, надёжность, страховое покрытие Squeegee Squad, стандарты OSHA, система бронирования Squadware. Состоятельные клиенты в Скарсдейле платят за повторяемый, застрахованный, униформированный сервис.</td>
+      </tr>
+      <tr>
+        <td>Коммерческие поставщики фасилити-услуг (SBM, ABM)</td>
+        <td class="threat-med">⬤ Средняя/Высокая</td>
+        <td>Могут уже обслуживать корпоративные кампусы и фармацевтические здания по контрактам управления объектами. Boehringer Ingelheim использует SBM Management Services как посредника-подрядчика.</td>
+        <td>Поддержка национальных аккаунтов от штаб-квартиры Squeegee Squad + специализированные услуги с сертификацией SPRAT, которые фасилити-менеджеры не могут получить у обычных клининговых подрядчиков. Участвуйте в тендерах рядом с ними, а не против них.</td>
+      </tr>
+      <tr>
+        <td>Ned Stevens Long Island</td>
+        <td class="threat-med">⬤ Средняя</td>
+        <td>839 отзывов, 61 год, крупный региональный оператор. Обслуживает Мамаронек с базы на Лонг-Айленде. Не местный для Уэстчестера бизнес, но хорошо оценённый и заметный.</td>
+        <td>Локальное присутствие и более быстрое время реакции. Коммерческие возможности Squeegee Squad превосходят всё, что предлагает Ned Stevens. Сфокусируйтесь на регулярных коммерческих аккаунтах, за которые они не борются.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 05 MARKET CONTEXT -->
+<section class="section" id="market">
+  <div class="section-header">
+    <div class="section-tag">05 — Рыночный контекст</div>
+    <div class="section-title">Почему эта территория остаётся исключительной, несмотря на конкуренцию</div>
+  </div>
+  <div class="context-grid">
+    <div class="context-card"><div class="context-card-label">Ср. доход домохозяйства, Скарсдейл</div><div class="context-card-num amber">$601K</div><div class="context-card-sub">Пригород №1 по богатству в США</div></div>
+    <div class="context-card"><div class="context-card-label">Ср. доход домохозяйства, Рай</div><div class="context-card-num amber">$421K</div><div class="context-card-sub">Пригород №2 по богатству в США</div></div>
+    <div class="context-card"><div class="context-card-label">Ср. доход домохозяйства, Харрисон</div><div class="context-card-num green">$257K</div><div class="context-card-sub">Штаб-квартиры Mastercard и PepsiCo</div></div>
+    <div class="context-card"><div class="context-card-label">Медианная стоимость дома, Армонк</div><div class="context-card-num green">$1.6M</div><div class="context-card-sub">Город штаб-квартиры IBM, крайне низкая плотность</div></div>
+    <div class="context-card"><div class="context-card-label">Медианный доход домохозяйства, Уэстчестер</div><div class="context-card-num green">$119K</div><div class="context-card-sub">+45% к среднему по США ($82K)</div></div>
+    <div class="context-card"><div class="context-card-label">Доход на душу населения</div><div class="context-card-num green">$136K</div><div class="context-card-sub">Округ Уэстчестер, 2024 (BEA)</div></div>
+    <div class="context-card"><div class="context-card-label">Дома на одну семью</div><div class="context-card-num blue">~170K</div><div class="context-card-sub">43.4% от 394K единиц жилья</div></div>
+    <div class="context-card"><div class="context-card-label">Squeegee Squad в NY+CT</div><div class="context-card-num blue">0</div><div class="context-card-sub">Подтверждено по актуальной карте локаций</div></div>
+  </div>
+  <div class="context-note">
+    <strong>Национальные аккаунты — возможность, а не риск:</strong> основатель компании подтвердил, что активные тендеры уже существуют в штате Нью-Йорк прямо сейчас — без франчайзи, способного их выполнить. При подписании эти тендеры переходят к вам. Это бесплатная генерация коммерческих лидов с первого дня — и это подтверждает, что франчайзер считает регион приоритетом, а не второстепенным направлением. Уточните на встрече в пятницу, какие именно тендеры существуют и на какой они стадии.
+  </div>
+</section>
+
+<!-- 06 INVESTMENT -->
+<section class="section" id="investment">
+  <div class="section-header">
+    <div class="section-tag">06 — Структура инвестиций</div>
+    <div class="section-title">Одна территория — на что вы соглашаетесь</div>
+  </div>
+  <div class="invest-grid">
+    <div class="invest-block">
+      <div class="invest-block-title">Первоначальные инвестиции — одна территория</div>
+      <div class="invest-row"><span class="invest-row-label">Франшизный взнос (1 территория, население 300K)</span><span class="invest-row-val amber">$50,000</span></div>
+      <div class="invest-row"><span class="invest-row-label">Взнос за обучение</span><span class="invest-row-val">$5,000</span></div>
+      <div class="invest-row"><span class="invest-row-label">Реклама на открытие</span><span class="invest-row-val">$6,000–$25,000</span></div>
+      <div class="invest-row"><span class="invest-row-label">Первоначальный взнос за автомобиль</span><span class="invest-row-val">$0–$10,000</span></div>
+      <div class="invest-row"><span class="invest-row-label">Лицензия на ПО (Squadware)</span><span class="invest-row-val">$1,000</span></div>
+      <div class="invest-row"><span class="invest-row-label">Оборудование и инвентарь (Harry Falk)</span><span class="invest-row-val">$1,000–$20,000</span></div>
+      <div class="invest-row"><span class="invest-row-label">Страхование, разрешения, униформа</span><span class="invest-row-val">$1,225–$11,050</span></div>
+      <div class="invest-row"><span class="invest-row-label">Оборотный капитал (3–6 месяцев)</span><span class="invest-row-val">$3,000–$35,000</span></div>
+      <div class="invest-row"><span class="invest-row-label" style="font-weight:600">Итоговый диапазон</span><span class="invest-row-val amber">$69,525–$263,550</span></div>
+    </div>
+    <div class="invest-block">
+      <div class="invest-block-title">Текущие отчисления (% от валовой выручки)</div>
+      <div class="invest-row"><span class="invest-row-label">Роялти — Уровень 6 (0–$100K)</span><span class="invest-row-val coral">8.0%</span></div>
+      <div class="invest-row"><span class="invest-row-label">Роялти — Уровень 5 ($101–250K)</span><span class="invest-row-val coral">7.0%</span></div>
+      <div class="invest-row"><span class="invest-row-label">Роялти — Уровень 4 ($250–500K)</span><span class="invest-row-val amber">6.0%</span></div>
+      <div class="invest-row"><span class="invest-row-label">Роялти — Уровень 3 ($500K–$1M)</span><span class="invest-row-val amber">5.0%</span></div>
+      <div class="invest-row"><span class="invest-row-label">Роялти — Уровень 2 ($1M–$2M)</span><span class="invest-row-val green">4.5%</span></div>
+      <div class="invest-row"><span class="invest-row-label">Роялти — Уровень 1 ($2M+)</span><span class="invest-row-val green">4.0%</span></div>
+      <div class="invest-row"><span class="invest-row-label">Национальный рекламный фонд</span><span class="invest-row-val">1.0%</span></div>
+      <div class="invest-row"><span class="invest-row-label">Локальная реклама (обязательный минимум)</span><span class="invest-row-val">5.0%</span></div>
+      <div class="invest-row"><span class="invest-row-label" style="font-weight:600">Итого при выручке $400K (Уровень 4)</span><span class="invest-row-val coral">12.0%</span></div>
+    </div>
+  </div>
+  <div style="font-size:11px; color:var(--ink-3); text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:10px;">Минимальные требования по валовой выручке</div>
+  <div class="yr-min-grid">
+    <div class="yr-min-cell"><div class="yr-min-label">Год 1</div><div class="yr-min-val">$50K</div></div>
+    <div class="yr-min-cell"><div class="yr-min-label">Год 2</div><div class="yr-min-val">$100K</div></div>
+    <div class="yr-min-cell"><div class="yr-min-label">Год 3</div><div class="yr-min-val">$150K</div></div>
+    <div class="yr-min-cell"><div class="yr-min-label">Год 4</div><div class="yr-min-val">$200K</div></div>
+    <div class="yr-min-cell"><div class="yr-min-label">Год 5</div><div class="yr-min-val">$250K</div></div>
+  </div>
+  <div style="font-size:12px; color:var(--ink-3); line-height:1.55;">Это минимумы, а не цели. Не достигнув их, вы рискуете получить штраф за недостижение минимальной выручки и потенциальное сокращение территории или расторжение договора.</div>
+</section>
+
+<!-- 07 COMMERCIAL PROOF -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag">07 — Доказательство коммерческого потенциала</div>
+    <div class="section-title">Пакет коммерческих предложений Boehringer Ingelheim — Риджфилд, Коннектикут</div>
+  </div>
+  <p style="font-size:13px; color:var(--ink-2); margin-bottom:20px; line-height:1.7;">Реальные предложения уже подготовлены для одного фармацевтического кампуса по адресу 900 Ridgebury Rd, Риджфилд, Коннектикут — обслуживается напрямую с вашей территории. Один клиент, четыре направления услуг. Это профиль коммерческого аккаунта, который Fish Window Cleaning и любой локальный оператор из Google структурно неспособны выиграть. Обратите внимание: все четыре предложения требуют бригады с сертификацией SPRAT — уточните сроки в пятницу.</p>
+  <div class="commercial-grid">
+    <div class="commercial-card"><div class="commercial-card-service">Наружная мойка окон</div><div class="commercial-card-amount">$59,405</div><div class="commercial-card-desc">5 зданий: BRC, RND, PDL, AOB, детский сад · беседочное кресло + автовышка · требуется SPRAT</div></div>
+    <div class="commercial-card"><div class="commercial-card-service">Мойка под давлением</div><div class="commercial-card-amount">$18,637</div><div class="commercial-card-desc">Здания RND + PDL · удаление плесени · доступ на кровлю · требуется SPRAT</div></div>
+    <div class="commercial-card"><div class="commercial-card-service">Мягкая мойка солнечных панелей</div><div class="commercial-card-amount">$5,112</div><div class="commercial-card-desc">Полный массив солнечных панелей · метод мягкой мойки · требуется бригадир с сертификацией SPRAT</div></div>
+    <div class="commercial-card"><div class="commercial-card-service">Очистка световых люков снаружи</div><div class="commercial-card-amount">$1,704</div><div class="commercial-card-desc">Наружное стекло световых люков · микрофибра и скребок · протирка рамы</div></div>
+  </div>
+  <div class="commercial-total">
+    <div>
+      <div class="commercial-total-label">Совокупная стоимость по одному клиенту</div>
+      <div style="font-size:12px; color:var(--ink-3); margin-top:3px;">Boehringer Ingelheim · Риджфилд, Коннектикут · апрель 2026 · через SBM Management Services</div>
+    </div>
+    <div>
+      <div class="commercial-total-val">$84,858</div>
+      <div class="commercial-total-sub">промежуточные суммы без налога<br>+$5,178 налог с продаж штата Коннектикут</div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 CALCULATOR -->
+<section class="section" id="calculator">
+  <div class="section-header">
+    <div class="section-tag">08 — Калькулятор P&amp;L</div>
+    <div class="section-title">Прогноз выручки и прибыли — меняйте параметры в реальном времени</div>
+  </div>
+  <div class="calc-section">
+    <div class="scenario-tabs">
+      <div class="scenario-tab active" onclick="setScenario('y1',this)">Год 1 · Консервативный</div>
+      <div class="scenario-tab" onclick="setScenario('y2',this)">Год 2 · Базовый сценарий</div>
+      <div class="scenario-tab" onclick="setScenario('y3',this)">3 фургона · Устойчивое состояние</div>
+      <div class="scenario-tab" onclick="setScenario('custom',this)">Свой вариант</div>
+    </div>
+    <div class="calc-controls">
+      <div>
+        <div class="slider-row"><span class="slider-label">Валовая выручка</span><input type="range" id="revenue" min="50000" max="1200000" step="10000" value="400000" style="flex:1"><span class="slider-val" id="rev-out">$400K</span></div>
+        <div class="slider-row"><span class="slider-label">Доля затрат на труд</span><input type="range" id="labor" min="25" max="55" step="1" value="38" style="flex:1"><span class="slider-val" id="labor-out">38%</span></div>
+        <div class="slider-row"><span class="slider-label">Авто и топливо, %</span><input type="range" id="vehicle" min="3" max="10" step="1" value="5" style="flex:1"><span class="slider-val" id="vehicle-out">5%</span></div>
+      </div>
+      <div>
+        <div class="slider-row"><span class="slider-label">Страхование, %</span><input type="range" id="insurance" min="2" max="6" step="1" value="3" style="flex:1"><span class="slider-val" id="insurance-out">3%</span></div>
+        <div class="slider-row"><span class="slider-label">Прочие накладные, %</span><input type="range" id="overhead" min="1" max="8" step="1" value="3" style="flex:1"><span class="slider-val" id="overhead-out">3%</span></div>
+      </div>
+    </div>
+    <div class="calc-metric-grid">
+      <div class="calc-metric"><div class="calc-metric-label">Валовая выручка</div><div class="calc-metric-val amber" id="m-rev">$400K</div><div class="calc-metric-sub" id="m-tier">Роялти Уровня 4 (6%)</div></div>
+      <div class="calc-metric"><div class="calc-metric-label">Всего франчайзинговых сборов</div><div class="calc-metric-val red" id="m-fees">-$48K</div><div class="calc-metric-sub" id="m-fees-pct">12% от выручки</div></div>
+      <div class="calc-metric"><div class="calc-metric-label">Всего операционных затрат</div><div class="calc-metric-val red" id="m-ops">-$196K</div><div class="calc-metric-sub" id="m-ops-pct">49% от выручки</div></div>
+      <div class="calc-metric"><div class="calc-metric-label">Чистая прибыль (владельца)</div><div class="calc-metric-val green" id="m-profit">$156K</div><div class="calc-metric-sub" id="m-margin">39% маржа</div></div>
+    </div>
+    <div class="bar-wrap">
+      <div id="bar-royalty" style="background:#c0392b"></div>
+      <div id="bar-adv"    style="background:#c47c14"></div>
+      <div id="bar-labor"  style="background:#1a5fa8"></div>
+      <div id="bar-vehicle"style="background:#6b4cb8"></div>
+      <div id="bar-ins"    style="background:#8a8480"></div>
+      <div id="bar-other"  style="background:#0e7f6e"></div>
+      <div id="bar-profit" style="background:#1e7a48"></div>
+    </div>
+    <div class="bar-legend">
+      <span class="leg-item"><span class="leg-dot" style="background:#c0392b"></span>Роялти</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#c47c14"></span>Реклама (нац. + локальная)</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#1a5fa8"></span>Труд</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#6b4cb8"></span>Авто и топливо</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#8a8480"></span>Страхование</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#0e7f6e"></span>Прочие накладные</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#1e7a48"></span>Чистая прибыль</span>
+    </div>
+    <table class="bd-table">
+      <thead><tr><th>Статья</th><th>% от выручки</th><th>Сумма</th></tr></thead>
+      <tbody>
+        <tr><td style="font-weight:600">Валовая выручка</td><td class="col-pct">100%</td><td id="b-rev" style="font-weight:600;font-family:'JetBrains Mono',monospace;text-align:right">$400,000</td></tr>
+        <tr class="group-header"><td colspan="3">Франчайзинговые сборы (согласно FDD)</td></tr>
+        <tr class="indent"><td>Роялти (по уровням)</td><td class="col-pct" id="b-royalty-pct">6.0%</td><td class="col-red" id="b-royalty">-$24,000</td></tr>
+        <tr class="indent"><td>Национальный рекламный фонд</td><td class="col-pct">1.0%</td><td class="col-red" id="b-natadv">-$4,000</td></tr>
+        <tr class="indent"><td>Локальная реклама (обязательный минимум)</td><td class="col-pct">5.0%</td><td class="col-red" id="b-locadv">-$20,000</td></tr>
+        <tr class="subtotal"><td>Итого франчайзинговые сборы</td><td class="col-pct" id="b-fees-pct">12%</td><td class="col-red" id="b-fees">-$48,000</td></tr>
+        <tr class="group-header"><td colspan="3">Операционные затраты</td></tr>
+        <tr class="indent"><td>Труд (зарплата + налоги на ФОТ)</td><td class="col-pct" id="b-labor-pct">38%</td><td class="col-red" id="b-labor">-$152,000</td></tr>
+        <tr class="indent"><td>Авто и топливо</td><td class="col-pct" id="b-vehicle-pct">5%</td><td class="col-red" id="b-vehicle">-$20,000</td></tr>
+        <tr class="indent"><td>Страхование</td><td class="col-pct" id="b-ins-pct">3%</td><td class="col-red" id="b-ins">-$12,000</td></tr>
+        <tr class="indent"><td>Прочие накладные (ПО, офис, разное)</td><td class="col-pct" id="b-other-pct">3%</td><td class="col-red" id="b-other">-$12,000</td></tr>
+        <tr class="subtotal"><td>Итого операционные затраты</td><td class="col-pct" id="b-ops-pct">49%</td><td class="col-red" id="b-ops">-$196,000</td></tr>
+        <tr class="total-row"><td>Чистая прибыль (до налогов, на руки владельцу)</td><td class="col-green" id="b-margin-pct">39%</td><td class="col-green" id="b-profit">$156,000</td></tr>
+      </tbody>
+    </table>
+    <div class="tier-note" id="tier-note">Уровень роялти: при $400K вы находитесь на Уровне 4 (6%). Превысьте $500K, чтобы перейти на 5%.</div>
+    <div class="chart-wrap"><canvas id="profitChart"></canvas></div>
+    <div style="font-size:11px; color:var(--ink-3); margin-top:8px; text-align:center;">Чистая прибыль при текущих допущениях по затратам в зависимости от сценариев выручки — уровень роялти подстраивается автоматически</div>
+
+    <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px">
+      <div style="font-size:11px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Обратный расчёт P&amp;L — сколько валовой выручки вам нужно?</div>
+      <div style="font-size:12px;color:var(--ink-2);margin-bottom:12px;line-height:1.6">На основе вашей текущей структуры затрат выше. Требуемая годовая валовая выручка для достижения целевого месячного чистого дохода:</div>
+      <div class="reverse-grid">
+        <div class="rev-box"><div class="rev-box-label">Чтобы получать $5K/мес чистыми</div><div class="rev-box-val" id="rev5k">—</div><div class="rev-box-sub">требуемая годовая валовая выручка</div></div>
+        <div class="rev-box"><div class="rev-box-label">Чтобы получать $8K/мес чистыми</div><div class="rev-box-val" id="rev8k">—</div><div class="rev-box-sub">требуемая годовая валовая выручка</div></div>
+        <div class="rev-box"><div class="rev-box-label">Чтобы получать $10K/мес чистыми</div><div class="rev-box-val" id="rev10k">—</div><div class="rev-box-sub">требуемая годовая валовая выручка</div></div>
+      </div>
+      <div class="context-note" id="reverse-note" style="margin-top:4px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 BENCHMARKS -->
+<section class="section" id="benchmarks">
+  <div class="section-header">
+    <div class="section-tag">09 — Бенчмарки выручки по FDD</div>
+    <div class="section-title">Сколько заработали сопоставимые франчайзи в 2025 году</div>
+  </div>
+  <p style="font-size:13px; color:var(--ink-2); margin-bottom:20px; line-height:1.7;">Выручка по всей системе выросла на 25.4% с 2024 по 2025 год. Данные из Пункта 19 FDD за 2026 год — фактическая заявленная выручка, а не прогнозы. Алабама и Аризона выделены как лучшие сопоставимые примеры для одной территории.</p>
+  <div>
+    <div class="benchmark-row header"><div>Локация</div><div>Шкала выручки</div><div>Выручка</div><div>Население</div><div>Возраст</div></div>
+    <div class="benchmark-row"><div class="bm-loc">🏆 Миннесота (аффилиров.)</div><div class="bm-bar-track"><div class="bm-bar-fill" style="width:100%"></div></div><div class="bm-rev">$4,122K</div><div class="bm-pop">2.76M</div><div class="bm-yr">19 лет</div></div>
+    <div class="benchmark-row"><div class="bm-loc">Флорида</div><div class="bm-bar-track"><div class="bm-bar-fill" style="width:52%"></div></div><div class="bm-rev">$2,141K</div><div class="bm-pop">3.07M</div><div class="bm-yr">10 лет</div></div>
+    <div class="benchmark-row highlight-row"><div class="bm-loc bm-highlight">⭐ Алабама (нас. 455K)</div><div class="bm-bar-track"><div class="bm-bar-fill" style="width:26%"></div></div><div class="bm-rev bm-highlight">$1,074K</div><div class="bm-pop">455K</div><div class="bm-yr bm-highlight">2 года</div></div>
+    <div class="benchmark-row highlight-row"><div class="bm-loc bm-highlight">⭐ Аризона (нас. 442K)</div><div class="bm-bar-track"><div class="bm-bar-fill" style="width:25%"></div></div><div class="bm-rev bm-highlight">$1,016K</div><div class="bm-pop">442K</div><div class="bm-yr">13 лет</div></div>
+    <div class="benchmark-row"><div class="bm-loc">Миннесота (нас. 570K)</div><div class="bm-bar-track"><div class="bm-bar-fill" style="width:25%"></div></div><div class="bm-rev">$1,013K</div><div class="bm-pop">570K</div><div class="bm-yr">4 года</div></div>
+    <div class="benchmark-row"><div class="bm-loc">Канзас (нас. 360K)</div><div class="bm-bar-track"><div class="bm-bar-fill" style="width:22%"></div></div><div class="bm-rev">$895K</div><div class="bm-pop">360K</div><div class="bm-yr">6 лет</div></div>
+    <div class="benchmark-row"><div class="bm-loc">Висконсин (нас. 330K)</div><div class="bm-bar-track"><div class="bm-bar-fill" style="width:20%"></div></div><div class="bm-rev">$803K</div><div class="bm-pop">330K</div><div class="bm-yr">12 лет</div></div>
+    <div class="benchmark-row"><div class="bm-loc">Пенсильвания (нас. 600K)</div><div class="bm-bar-track"><div class="bm-bar-fill" style="width:16%"></div></div><div class="bm-rev">$638K</div><div class="bm-pop">600K</div><div class="bm-yr">10 лет</div></div>
+    <div class="benchmark-row"><div class="bm-loc">Мэн (нас. 230K)</div><div class="bm-bar-track"><div class="bm-bar-fill" style="width:7%"></div></div><div class="bm-rev">$273K</div><div class="bm-pop">230K</div><div class="bm-yr">8 лет</div></div>
+  </div>
+  <div style="margin-top:16px; font-size:12px; color:var(--ink-2); background:var(--teal-bg); border:1px solid var(--teal-bdr); padding:12px 16px; border-radius:8px; line-height:1.65;">
+    ⭐ <strong>Лучшие сопоставимые примеры:</strong> Алабама (население 455K, 2 года, $1.07M) и Аризона (442K, $1.01M). Премия по доходам вашей территории с центром в Скарсдейле по сравнению с Алабамой или Аризоной должна обеспечить более быстрый разгон — более высокий средний чек за заказ означает, что нужно меньше заказов для достижения того же уровня выручки. Ни в Алабаме, ни в Аризоне нет эквивалента Boehringer Ingelheim.
+  </div>
+</section>
+
+<!-- 10 RISKS -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag">10 — Реестр рисков</div>
+    <div class="section-title">Что может пойти не так</div>
+  </div>
+  <div class="risks-list">
+    <div class="risk-row"><div class="risk-num">R1</div><div><div class="risk-title">Финансовая нестабильность франчайзера</div><div class="risk-body">FDD отмечает финансовое состояние как проблему. Реструктуризация отчётности за 2025 год по стандарту ASC 606. Кредитная линия на $300K истекает в октябре 2026 года. Спросите напрямую: текущие денежные резервы, статус продления кредитной линии, штат поддержки по сравнению с ростом числа франчайзи.</div></div></div>
+    <div class="risk-row"><div class="risk-num">R2</div><div><div class="risk-title">Размытие состава территории</div><div class="risk-body">Если Squeegee Squad заполнит вашу квоту в 300K населением Нью-Рошель, Йонкерса или Маунт-Вернона вместо почтовых индексов Скарсдейла/Харрисона/Армонка, экономика выручки на заказ значительно ухудшится. Договаривайтесь о почтовых индексах явно — не о границах округа.</div></div></div>
+    <div class="risk-row"><div class="risk-num">R3</div><div><div class="risk-title">Рынок жилых услуг уже конкурентен</div><div class="risk-body">20 операторов в одном поисковом запросе Google. Fish и Window Genie — устоявшиеся франшизы с сильными отзывами. Ранняя выручка от жилого сегмента потребует активного привлечения клиентов — бюджет и маркетинговые допущения должны отражать эту реальность, а не предполагать лёгкий выход на рынок.</div></div></div>
+    <div class="risk-row"><div class="risk-num">R4</div><div><div class="risk-title">Задержка SPRAT блокирует коммерческую выручку</div><div class="risk-body">Каждый заказ типа Boehringer Ingelheim требует бригады с сертификацией SPRAT. Если сертификация занимает 3–6 месяцев, вы ограничены только жилым сегментом в этот период. Уточните точные сроки и стоимость до подписания.</div></div></div>
+    <div class="risk-row"><div class="risk-num">R5</div><div><div class="risk-title">Напряжённость рынка труда в Уэстчестере</div><div class="risk-body">Найм квалифицированных техников на рынке со средним доходом $119K обходится дороже, чем в Алабаме или Аризоне. Реалистичная доля затрат на труд здесь — 38–42% от выручки. Закладывайте $20–28/час для опытной бригады.</div></div></div>
+    <div class="risk-row"><div class="risk-num">R6</div><div><div class="risk-title">Личное поручительство супруга/супруги</div><div class="risk-body">FDD требует, чтобы супруг(а) подписал(а) личное поручительство, покрывающее все финансовые обязательства — под риском оказываются совместные семейные активы. Обсудите это с франчайзинговым юристом до подписания.</div></div></div>
+    <div class="risk-row"><div class="risk-num">R7</div><div><div class="risk-title">Асимметрия разрешения споров в Миннесоте</div><div class="risk-body">Все споры должны разрешаться в Миннесоте. Как оператору из Нью-Йорка, любой серьёзный спор с франчайзером будет означать поездки и услуги адвоката, лицензированного в Миннесоте. Уточните свои права по Закону штата Нью-Йорк о продаже франшиз, который может давать дополнительную защиту.</div></div></div>
+  </div>
+</section>
+
+<!-- 11 FRIDAY -->
+<section class="section" id="friday">
+  <div class="section-header">
+    <div class="section-tag">11 — Подготовка к встрече в пятницу</div>
+    <div class="section-title">Вопросы, которые заставят основателей компании доказать состоятельность возможности</div>
+  </div>
+  <div class="questions-list">
+    <div class="question-row"><div class="question-num">Q1</div><div class="question-text">Можете ли вы сформировать мою территорию по почтовым индексам, с центром в Скарсдейле 10583, Харрисоне 10528, Пёрчейзе 10577 и Армонке 10504 — явно исключив Нью-Рошель, Йонкерс и Маунт-Вернон?</div><span class="question-cat cat-territory">Территория</span></div>
+    <div class="question-row"><div class="question-num">Q2</div><div class="question-text">Покажите мне точную карту моей предлагаемой территории на 300K населения. Какие почтовые индексы входят, а какие нет?</div><span class="question-cat cat-territory">Территория</span></div>
+    <div class="question-row"><div class="question-num">Q3</div><div class="question-text">Сколько лидов или тендеров по национальным аккаунтам существует сейчас в NY/CT? Можете показать примеры, сопоставимые с аккаунтом Boehringer Ingelheim — и переходят ли они ко мне при подписании?</div><span class="question-cat cat-financial">Нац. аккаунты</span></div>
+    <div class="question-row"><div class="question-num">Q4</div><div class="question-text">FDD за 2026 год отмечает ваше финансовое состояние и требовал реструктуризации отчётности за 2024–2023 годы по стандарту ASC 606. Что именно изменилось, каковы текущие денежные резервы, и продлевается ли кредитная линия на $300K?</div><span class="question-cat cat-financial">Финансы</span></div>
+    <div class="question-row"><div class="question-num">Q5</div><div class="question-text">Сколько сотрудников поддержки закреплено за франчайзи прямо сейчас, и каково реальное соотношение на одного франчайзи? Как на практике, а не в презентации, выглядит поддержка после открытия?</div><span class="question-cat cat-financial">Поддержка</span></div>
+    <div class="question-row"><div class="question-num">Q6</div><div class="question-text">Какой процент новых франчайзи достигает $250K, $500K и $1M валовой выручки? Каковы типичные сроки?</div><span class="question-cat cat-financial">Финансы</span></div>
+    <div class="question-row"><div class="question-num">Q7</div><div class="question-text">Какие именно услуги я могу продавать сразу после обучения — до сертификации SPRAT? Каковы сроки и стоимость сертификации SPRAT?</div><span class="question-cat cat-market">Операции</span></div>
+    <div class="question-row"><div class="question-num">Q8</div><div class="question-text">Сколько реально нужно закладывать на Google Local Services Ads в округе Уэстчестер? Есть ли у вас бенчмарк-данные по сопоставимым пригородным рынкам?</div><span class="question-cat cat-financial">Маркетинг</span></div>
+    <div class="question-row"><div class="question-num">Q9</div><div class="question-text">Каких конкурентов в Уэстчестере и округе Фэрфилд вы уже знаете — в частности, Fish Window Cleaning и Window Genie? За счёт чего Squeegee Squad побеждает Fish на практике?</div><span class="question-cat cat-market">Конкуренция</span></div>
+    <div class="question-row"><div class="question-num">Q10</div><div class="question-text">Можете ли вы связать меня с франчайзи из Алабамы ($1.07M, 2 года) и франчайзи из Пенсильвании ($638K, 10 лет) до принятия окончательного решения?</div><span class="question-cat cat-market">Референсы</span></div>
+    <div class="question-row"><div class="question-num">Q11</div><div class="question-text">Есть ли гибкость по условиям сделки — в частности, право первого отказа на территорию в округе Фэрфилд, Коннектикут, по сегодняшним ценам, если я подтвержу модель в первый год?</div><span class="question-cat cat-legal">Условия сделки</span></div>
+    <div class="question-row"><div class="question-num">Q12</div><div class="question-text">Доступны ли услуги снегоуборки и удаления ледяных заторов на моей территории с первого дня? Это напрямую влияет на управление денежным потоком в ноябре–феврале.</div><span class="question-cat cat-market">Операции</span></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-brand">Squeegee <span>Squad</span> — Аналитическая справка</div>
+  <div class="footer-meta">Обновлено: июнь 2026 · Одна территория · С центром в Скарсдейле · Только для внутреннего использования</div>
+</footer>
+
+<script>
+function fmt(n){return '$'+Math.round(Math.abs(n)).toLocaleString();}
+function fmtK(n){if(Math.abs(n)>=1000000)return(n<0?'-':'')+'$'+(Math.abs(n)/1000000).toFixed(1)+'M';return(n<0?'-':'')+'$'+Math.round(Math.abs(n)/1000)+'K';}
+function royaltyRate(r){if(r<=100000)return 0.08;if(r<=250000)return 0.07;if(r<=500000)return 0.06;if(r<=1000000)return 0.05;if(r<=2000000)return 0.045;return 0.04;}
+function tierName(r){if(r<=100000)return'Уровень 6, роялти (8%)';if(r<=250000)return'Уровень 5, роялти (7%)';if(r<=500000)return'Уровень 4, роялти (6%)';if(r<=1000000)return'Уровень 3, роялти (5%)';if(r<=2000000)return'Уровень 2, роялти (4.5%)';return'Уровень 1, роялти (4%)';}
+function tierNote(r){if(r<=100000)return'Уровень 6 (8%). Достигните $101K, чтобы перейти на 7%.';if(r<=250000)return'Уровень 5 (7%). Достигните $251K, чтобы перейти на 6%.';if(r<=500000)return'Уровень 4 (6%). Превысьте $500K, чтобы перейти на 5% — экономия ~'+fmt(r*0.01)+'/год.';if(r<=1000000)return'Уровень 3 (5%). Хорошо. Превысьте $1M, чтобы перейти на Уровень 2 (4.5%).';if(r<=2000000)return'Уровень 2 (4.5%). Превысьте $2M, чтобы перейти на Уровень 1 (4%).';return'Уровень 1 (4%) — лучшая ставка в системе.';}
+
+// Scenario presets
+const scenarios={
+  y1:{rev:220000,labor:42,vehicle:6,insurance:4,overhead:4},   // Год 1: 1 фургон, консервативный разгон
+  y2:{rev:450000,labor:40,vehicle:5,insurance:3,overhead:3},   // Год 2: 2 фургона, полный разгон
+  y3:{rev:840000,labor:38,vehicle:5,insurance:3,overhead:3},   // 3 фургона, устойчивое состояние (лучший пример из FDD)
+};
+
+function setScenario(key,el){
+  document.querySelectorAll('.scenario-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  if(key==='custom')return;
+  const s=scenarios[key];
+  document.getElementById('revenue').value=s.rev;
+  document.getElementById('labor').value=s.labor;
+  document.getElementById('vehicle').value=s.vehicle;
+  document.getElementById('insurance').value=s.insurance;
+  document.getElementById('overhead').value=s.overhead;
+  calc();
+}
+
+let chart=null;
+function calc(){
+  const rev=parseInt(document.getElementById('revenue').value);
+  const lp=parseInt(document.getElementById('labor').value)/100;
+  const vp=parseInt(document.getElementById('vehicle').value)/100;
+  const ip=parseInt(document.getElementById('insurance').value)/100;
+  const op=parseInt(document.getElementById('overhead').value)/100;
+  document.getElementById('rev-out').textContent=fmtK(rev);
+  document.getElementById('labor-out').textContent=document.getElementById('labor').value+'%';
+  document.getElementById('vehicle-out').textContent=document.getElementById('vehicle').value+'%';
+  document.getElementById('insurance-out').textContent=document.getElementById('insurance').value+'%';
+  document.getElementById('overhead-out').textContent=document.getElementById('overhead').value+'%';
+  const rate=royaltyRate(rev);
+  const royalty=rev*rate,natAdv=rev*0.01,locAdv=rev*0.05,totalFees=royalty+natAdv+locAdv;
+  const labor=rev*lp,vehicle=rev*vp,ins=rev*ip,other=rev*op,totalOps=labor+vehicle+ins+other;
+  const profit=rev-totalFees-totalOps,margin=profit/rev;
+  document.getElementById('m-rev').textContent=fmtK(rev);
+  document.getElementById('m-tier').textContent=tierName(rev);
+  document.getElementById('m-fees').textContent='-'+fmtK(totalFees);
+  document.getElementById('m-fees-pct').textContent=Math.round(totalFees/rev*100)+'% от выручки';
+  document.getElementById('m-ops').textContent='-'+fmtK(totalOps);
+  document.getElementById('m-ops-pct').textContent=Math.round(totalOps/rev*100)+'% от выручки';
+  document.getElementById('m-profit').textContent=(profit<0?'-':'')+fmtK(Math.abs(profit));
+  document.getElementById('m-profit').className='calc-metric-val '+(profit>=0?'green':'red');
+  document.getElementById('m-margin').textContent=Math.round(margin*100)+'% маржа';
+  document.getElementById('b-rev').textContent=fmt(rev);
+  document.getElementById('b-royalty-pct').textContent=(rate*100).toFixed(1)+'%';
+  document.getElementById('b-royalty').textContent='-'+fmt(royalty);
+  document.getElementById('b-natadv').textContent='-'+fmt(natAdv);
+  document.getElementById('b-locadv').textContent='-'+fmt(locAdv);
+  document.getElementById('b-fees-pct').textContent=Math.round(totalFees/rev*100)+'%';
+  document.getElementById('b-fees').textContent='-'+fmt(totalFees);
+  document.getElementById('b-labor-pct').textContent=Math.round(lp*100)+'%';
+  document.getElementById('b-labor').textContent='-'+fmt(labor);
+  document.getElementById('b-vehicle-pct').textContent=Math.round(vp*100)+'%';
+  document.getElementById('b-vehicle').textContent='-'+fmt(vehicle);
+  document.getElementById('b-ins-pct').textContent=Math.round(ip*100)+'%';
+  document.getElementById('b-ins').textContent='-'+fmt(ins);
+  document.getElementById('b-other-pct').textContent=Math.round(op*100)+'%';
+  document.getElementById('b-other').textContent='-'+fmt(other);
+  document.getElementById('b-ops-pct').textContent=Math.round(totalOps/rev*100)+'%';
+  document.getElementById('b-ops').textContent='-'+fmt(totalOps);
+  document.getElementById('b-margin-pct').textContent=Math.round(margin*100)+'%';
+  document.getElementById('b-margin-pct').className=profit>=0?'col-green':'col-red';
+  document.getElementById('b-profit').textContent=(profit<0?'-':'')+fmt(Math.abs(profit));
+  document.getElementById('b-profit').className=profit>=0?'col-green':'col-red';
+  document.getElementById('tier-note').textContent=tierNote(rev);
+  const segs=[Math.round(rate*100),6,Math.round(lp*100),Math.round(vp*100),Math.round(ip*100),Math.round(op*100),Math.max(0,Math.round(margin*100))];
+  ['bar-royalty','bar-adv','bar-labor','bar-vehicle','bar-ins','bar-other','bar-profit'].forEach((id,i)=>{const el=document.getElementById(id);el.style.width=segs[i]+'%';el.style.display='block';el.style.height='10px';});
+  const levels=[100000,200000,300000,400000,500000,600000,700000,800000,900000,1000000,1200000];
+  const profits=levels.map(r=>Math.round(r-r*royaltyRate(r)-r*0.06-r*lp-r*vp-r*ip-r*op));
+  const labels=levels.map(r=>fmtK(r));
+  const colors=profits.map(p=>p>=0?'#1e7a48':'#c0392b');
+  if(chart){chart.data.datasets[0].data=profits;chart.data.datasets[0].backgroundColor=colors;chart.update();}
+  else{chart=new Chart(document.getElementById('profitChart'),{type:'bar',data:{labels,datasets:[{label:'Чистая прибыль',data:profits,backgroundColor:colors,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' Чистая прибыль: '+(ctx.raw<0?'-$':'$')+Math.abs(ctx.raw).toLocaleString()}}},scales:{x:{grid:{display:false},ticks:{font:{size:11},color:'#8a8480'}},y:{ticks:{font:{size:11},color:'#8a8480',callback:v=>(v<0?'-$':'$')+Math.abs(v/1000)+'K'},grid:{color:'rgba(0,0,0,0.05)'}}}}});}
+
+  // Обратный расчёт P&L — находим требуемую валовую выручку для заданного чистого дохода
+  function grossForNet(targetNet){
+    for(let g=50000;g<=2000000;g+=1000){
+      const r=royaltyRate(g);
+      const n=g*(1-r-0.06-lp-vp-ip-op);
+      if(n>=targetNet)return g;
+    }
+    return null;
+  }
+  const g5=grossForNet(60000),g8=grossForNet(96000),g10=grossForNet(120000);
+  document.getElementById('rev5k').textContent=g5?fmtK(g5):'$1M+';
+  document.getElementById('rev8k').textContent=g8?fmtK(g8):'$1M+';
+  document.getElementById('rev10k').textContent=g10?fmtK(g10):'$1M+';
+  const mn=Math.round(profit/12);
+  const rn=document.getElementById('reverse-note');
+  rn.textContent=`При текущих допущениях ваша модель генерирует ${fmtK(rev)} валовой выручки / ${fmtK(Math.max(0,profit))} чистой прибыли в год — ${fmt(Math.max(0,mn))}/месяц дохода владельца. `+(g8?`Чтобы достичь $8K/месяц, нужно ${fmtK(g8)} валовой выручки — ${rev>=g8?'✓ ваша текущая модель превышает эту цель.':'нужно увеличить выручку на '+fmtK(g8-rev)+'.'}`:'');
+}
+['revenue','labor','vehicle','insurance','overhead'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{
+  document.querySelectorAll('.scenario-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.scenario-tab')[3].classList.add('active');
+  calc();
+}));
+calc();
+</script>
+</body>
+</html>
